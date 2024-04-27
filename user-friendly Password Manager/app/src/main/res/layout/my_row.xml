@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:id="@+id/mainLayout">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:elevation="0dp"
+            android:paddingBottom="30dp"
+            android:paddingTop="15dp">
+
+            <ImageView
+                android:id="@+id/icon_entry"
+                android:layout_width="55dp"
+                android:layout_height="55dp"
+                android:fontFamily="@font/jetbrainsmonobold"
+                android:src="@drawable/icon_entry"
+                android:text="1"
+                android:textColor="@color/text_primary"
+                android:textSize="40dp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/row_name_txt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:fontFamily="@font/jetbrainsmonoregular"
+                android:text="Name 1"
+                android:textColor="@color/text_primary"
+                android:textSize="20dp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toEndOf="@+id/icon_entry"
+                app:layout_constraintTop_toTopOf="@+id/icon_entry" />
+
+            <TextView
+                android:id="@+id/row_email_txt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/jetbrainsmonoregular"
+                android:text="Email 1"
+                android:textColor="@color/text_secondary"
+                app:layout_constraintBottom_toBottomOf="@+id/icon_entry"
+                app:layout_constraintStart_toStartOf="@+id/row_name_txt" />
+
+            <TextView
+                android:id="@+id/row_tw_txt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/jetbrainsmonoregular"
+                android:text="TW"
+                android:textSize="17dp"
+                android:textColor="@color/text_primary"
+                app:layout_constraintBottom_toBottomOf="@+id/icon_entry"
+                app:layout_constraintEnd_toEndOf="@+id/icon_entry"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/icon_entry" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+</LinearLayout>

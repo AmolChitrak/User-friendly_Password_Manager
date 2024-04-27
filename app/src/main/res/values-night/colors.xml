@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--
+    <color name="black">#FF000000</color>
+    <color name="background">#0F1511</color>
+    <color name="background_primary">#0F1511</color>
+    <color name="background_secondary">#212824</color>
+    <color name="text_primary">#FFFFFF</color>
+    <color name="text_secondary">#525252</color>
+    <color name="accent">#FEED55</color>
+    -->
+<!--For dark mode-->
+    <!--For dark mode-->
+    <color name="background_login">#141218</color>
+    <color name="background_primary">#141218</color>
+    <color name="background_secondary">#211F26</color>
+    <color name="text_primary">#CAC4D0</color>
+    <color name="text_secondary">#494949</color>
+    <color name="accent">#D0BCFF</color>
+
+<!--    For toggle button-->
+    <color name="colorOn">#D0BCFF</color>
+    <color name="colorOff">#dee0d9</color>
+
+<!--    For navigation bar-->
+    <color name="navigationbar_dark_mode">#141218</color>
+    <color name="navigationbar_light_mode">#FFFFFF</color>
+
+</resources>

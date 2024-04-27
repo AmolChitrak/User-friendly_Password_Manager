@@ -1,0 +1,218 @@
+package com.gero.newpass.view.fragments;
+
+import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
+import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
+
+import com.gero.newpass.R;
+import com.gero.newpass.databinding.FragmentUpdatePasswordBinding;
+import com.gero.newpass.encryption.EncryptionHelper;
+
+import com.gero.newpass.factory.ViewMoldelsFactory;
+import com.gero.newpass.repository.ResourceRepository;
+import com.gero.newpass.utilities.VibrationHelper;
+import com.gero.newpass.view.activities.MainViewActivity;
+import com.gero.newpass.viewmodel.UpdateViewModel;
+
+
+public class UpdatePasswordFragment extends Fragment {
+
+
+    private FragmentUpdatePasswordBinding binding;
+
+    private EditText name_input, email_input, password_input;
+    private String entry, name, email, password;
+    //private UpdateViewModel updateViewModel;
+    private ImageButton updateButton, deleteButton, copyButtonPassword, copyButtonEmail, backButton;
+
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        binding = FragmentUpdatePasswordBinding.inflate(inflater, container, false);
+        return binding.getRoot();
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        getAndSetIntentData();
+    }
+
+    @SuppressLint({"SetTextI18n", "ClickableViewAccessibility"})
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        //updateViewModel = new ViewModelProvider(this).get(UpdateViewModel.class);
+
+        ResourceRepository resourceRepository = new ResourceRepository(requireContext());
+        ViewMoldelsFactory factory = new ViewMoldelsFactory(resourceRepository);
+        UpdateViewModel updateViewModel = new ViewModelProvider(this, factory).get(UpdateViewModel.class);
+
+
+        initViews(binding);
+
+        Activity activity = this.getActivity();
+
+        String decryptedPassword = EncryptionHelper.decrypt(password);
+
+        name_input.setText(name);
+        email_input.setText(email);
+        password_input.setText(decryptedPassword);
+
+        // Observe any feedback messages from the ViewModel
+        updateViewModel.getMessageLiveData().observe(getViewLifecycleOwner(), message ->
+                Toast.makeText(this.getContext(), message, Toast.LENGTH_SHORT).show());
+
+
+        updateButton.setOnTouchListener((v, event) -> {
+
+            name = name_input.getText().toString().trim();
+            email = email_input.getText().toString().trim();
+            password = password_input.getText().toString().trim();
+
+            switch (event.getAction()) {
+                case MotionEvent.ACTION_DOWN:
+                    VibrationHelper.vibrate(requireContext(), getResources().getInteger(R.integer.vibration_duration0));
+                    return true;
+                case MotionEvent.ACTION_UP:
+                    v.performClick();
+                    updateViewModel.updateEntry(entry, name, email, password);
+                    VibrationHelper.vibrate(requireContext(), getResources().getInteger(R.integer.vibration_duration1));
+                    return true;
+            }
+            return false;
+        });
+
+        updateViewModel.getSuccessUpdateLiveData().observe(getViewLifecycleOwner(), success -> {
+                    if (success) {
+                        if (activity instanceof MainViewActivity) {
+                            Bundle result = new Bundle();
+                            //Result key for the main fragment to update the addition
+                            result.putString("resultKey", "1");
+                            getParentFragmentManager().setFragmentResult("requestKey", result);
+                            ((MainViewActivity) activity).onBackPressed();
+                        }
+                    }
+                }
+        );
+
+
+        deleteButton.setOnTouchListener((v, event) -> {
+
+            switch (event.getAction()) {
+                case MotionEvent.ACTION_DOWN:
+                    VibrationHelper.vibrate(requireContext(), getResources().getInteger(R.integer.vibration_duration0));
+                    return true;
+                case MotionEvent.ACTION_UP:
+                    v.performClick();
+
+                    AlertDialog.Builder builder = new AlertDialog.Builder(this.requireContext());
+                    builder.setTitle(getString(R.string.update_alertdialog_title) + name + " ?");
+                    builder.setMessage(getString(R.string.update_alertdialog_are_you_sure_you_want_to_delete) + name + " ?");
+                    builder.setPositiveButton(R.string.update_alertdialog_yes, (dialogInterface, i) -> {
+                        updateViewModel.deleteEntry(entry);
+                        if (activity instanceof MainViewActivity) {
+                            Bundle result = new Bundle();
+                            //Result key for the main fragment to update the deletion
+                            result.putString("resultKey", "1");
+                            getParentFragmentManager().setFragmentResult("requestKey", result);
+                            ((MainViewActivity) activity).onBackPressed();
+                        }
+                    });
+                    builder.setNegativeButton(R.string.update_alertdialog_no, (dialogInterface, i) -> {
+
+                    });
+                    builder.create().show();
+
+                    VibrationHelper.vibrate(requireContext(), getResources().getInteger(R.integer.vibration_duration1));
+                    return true;
+            }
+            return false;
+        });
+
+        updateViewModel.getSuccessUpdateLiveData().observe(getViewLifecycleOwner(), success -> {
+                    if (success) {
+                        if (activity instanceof MainViewActivity) {
+                            Bundle result = new Bundle();
+                            //Result key for the main fragment to update the addition
+                            result.putString("resultKey", "1");
+                            getParentFragmentManager().setFragmentResult("requestKey", result);
+                            ((MainViewActivity) activity).onBackPressed();
+                        }
+                    }
+                }
+        );
+
+        copyButtonPassword.setOnClickListener(v -> {
+            copyToClipboard(password_input.getText().toString().trim());
+            VibrationHelper.vibrate(requireContext(), getResources().getInteger(R.integer.vibration_duration2));
+            Toast.makeText(this.getContext(), R.string.update_password_copied_to_the_clipboard, Toast.LENGTH_SHORT).show();
+        });
+
+        copyButtonEmail.setOnClickListener(v -> {
+            copyToClipboard(email_input.getText().toString().trim());
+            VibrationHelper.vibrate(requireContext(), getResources().getInteger(R.integer.vibration_duration2));
+            Toast.makeText(this.getContext(), R.string.update_email_copied_to_the_clipboard, Toast.LENGTH_SHORT).show();
+        });
+
+        backButton.setOnClickListener(v -> {
+            if (activity instanceof MainViewActivity) {
+                Bundle result = new Bundle();
+                result.putString("resultKey", "1");
+                getParentFragmentManager().setFragmentResult("requestKey", result);
+                ((MainViewActivity) activity).onBackPressed();
+            }
+        });
+    }
+
+    private void getAndSetIntentData() {
+        Bundle args = getArguments();
+        if (args != null && args.containsKey("entry") && args.containsKey("name") &&
+                args.containsKey("email") && args.containsKey("password")) {
+            entry = args.getString("entry");
+            name = args.getString("name");
+            email = args.getString("email");
+            password = args.getString("password");
+        } else {
+            Toast.makeText(this.getContext(), R.string.update_no_data, Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    /**
+     * Method for copying text to the clipboard
+     *
+     * @param text text to copy to the clipboard
+     */
+    private void copyToClipboard(String text) {
+
+        ClipboardManager clipboardManager = (ClipboardManager) this.requireActivity().getSystemService(Context.CLIPBOARD_SERVICE);
+        ClipData clipData = ClipData.newPlainText(getString(R.string.text_copied_to_clipboard), text);
+        clipboardManager.setPrimaryClip(clipData);
+    }
+
+    private void initViews(FragmentUpdatePasswordBinding binding) {
+        name_input = binding.nameInput2;
+        email_input = binding.emailInput2;
+        password_input = binding.passwordInput2;
+        updateButton = binding.updateButton;
+        backButton = binding.backButton;
+        deleteButton = binding.deleteButton;
+        copyButtonPassword = binding.copyButtonPassword;
+        copyButtonEmail = binding.copyButtonEmail;
+    }
+}
